@@ -23,7 +23,7 @@ module.exports = function(config) {
       'karma-jasmine-html-reporter'
     ],
     browserify: {
-      debug: true;
+      debug: true,
       transform: [['babelify', {presets:["es2015"]}]]
     },
 

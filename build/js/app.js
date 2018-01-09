@@ -35,6 +35,11 @@ var Board = exports.Board = function () {
   }
 
   _createClass(Board, [{
+    key: "printResults",
+    value: function printResults() {
+      $("#output").append("<li>" + this.array + "<li>");
+    }
+  }, {
     key: "insertItem",
     value: function insertItem(row, column, item) {
       this.array[row].splice(column, 1, item);
@@ -91,64 +96,91 @@ var Board = exports.Board = function () {
       return true;
     }
   }, {
+    key: "mirrorArray",
+    value: function mirrorArray() {
+      var mirrorArray = this.array.map(function (row) {
+        return row.map(function (number) {
+          return number != 0;
+        });
+      });
+      return mirrorArray;
+    }
+  }, {
     key: "solvePuzzle",
-    value: function solvePuzzle(number, row, column) {
-      var num = number;
-      var r = row;
-      var col = column;
-      if (this.isComplete()) {
-        return this.array;
-      } else {
-        if (this.array[r].includes(num)) {
-          if (r < 3) {
-            r++;
-            col = 0;
+    value: function solvePuzzle() {
+      var _this = this;
+
+      debugger;
+      var isFixed = this.mirrorArray();
+      var recursiveSolver = function recursiveSolver(number, row, column) {
+        var num = number;
+        var r = row;
+        var col = column;
+
+        var backtrack = function backtrack() {
+          if (r < 0 || num < 0) {
+            return _this.array;
+          } else if (r > 0) {
+            r--;
           } else {
-            num++;
-            r = 0;
-            col = 0;
+            num--;
+            r = 3;
           }
-        } else if (this.array[r][col] === 0 && this.isLegal(r, col, num)) {
-          this.insertItem(r, col, num);
-          console.log(this.array);
-          if (r < 3) {
-            r++;
-            col = 0;
+          var index = _this.array[r].indexOf(num);
+          if (!isFixed[r][index]) {
+            _this.insertItem(r, index, 0);
           } else {
-            num++;
-            r = 0;
-            col = 0;
+            backtrack();
           }
-        } else if (col < 3) {
-          col++;
-        } else if (r > 0) {
-          r--;
-          var index = this.array[r].indexOf(num);
-          this.insertItem(r, index, 0);
-          col = index + 1;
+          if (index < 3) {
+            col = index + 1;
+          } else {
+            backtrack();
+          }
+        };
+        if (_this.isComplete()) {
+          return _this.array;
         } else {
-          num--;
-          r = 3;
-          var _index = this.array[r].indexOf(num);
-          this.insertItem(r, _index, 0);
-          col = _index + 1;
+          if (_this.array[r].includes(num)) {
+            if (r < 3) {
+              r++;
+              col = 0;
+            } else {
+              num++;
+              r = 0;
+              col = 0;
+            }
+          } else if (_this.array[r][col] === 0 && _this.isLegal(r, col, num)) {
+            _this.insertItem(r, col, num);
+            if (r < 3) {
+              r++;
+              col = 0;
+            } else {
+              num++;
+              r = 0;
+              col = 0;
+            }
+          } else if (col < 3) {
+            col++;
+          } else if (col > 3 || r > 3 || num > 4) {
+            return _this.array;
+          } else {
+            backtrack();
+          }
+          recursiveSolver(num, r, col);
         }
-        this.solvePuzzle(num, r, col);
-      }
+      };
+      console.log(recursiveSolver(1, 0, 0));
+      return recursiveSolver(1, 0, 0);
     }
   }]);
 
   return Board;
 }();
 
-},{}],2:[function(require,module,exports){
-'use strict';
-
-var _sudoku = require('./../js/sudoku.js');
-
 $(document).ready(function () {
-  var unsolved = new _sudoku.Board([[0, 3, 0, 0], [2, 0, 0, 3], [1, 0, 0, 4], [0, 0, 1, 0]]);
-  unsolved.solvePuzzle(1, 0, 0);
+  var unsolved = new Board([[0, 4, 0, 0], [1, 0, 0, 0], [0, 0, 0, 2], [0, 1, 3, 0]]);
+  unsolved.solvePuzzle();
 });
 
-},{"./../js/sudoku.js":1}]},{},[2]);
+},{}]},{},[1]);

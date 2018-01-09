@@ -71,59 +71,77 @@ export class Board {
     return true;
   }
 
-  solvePuzzle(number, row, column) {
-    let num = number;
-    let r = row;
-    let col = column;
+  mirrorArray() {
+    let mirrorArray = this.array.map(function(row) {
+      return row.map(function(number) {
+        return(number != 0);
+      });
+    });
+    return mirrorArray;
+  }
 
-    function backtrack() {
-      let index = this.array[r].indexOf(num);
-      this.insertItem(r,index,0);
-      if(index < 3) {
-        col = index + 1;
-      } else if (r > 0){
-        r--;
-        backtrack();
-      } else {
-        num--;
-        r = 3;
-        backtrack();
-      }
-    };
-    if(this.isComplete()) {
-      return this.array;
-    } else {
-      if(this.array[r].includes(num)) {
-        if(r<3) {
-          r++;
-          col = 0;
+  solvePuzzle() {
+    debugger;
+    let isFixed = this.mirrorArray();
+    let recursiveSolver = (number, row, column) => {
+      let num = number;
+      let r = row;
+      let col = column;
+
+      let backtrack = () => {
+        if(r < 0 || num < 0) {
+          return this.array;
+        } else if (r > 0) {
+          r--;
         } else {
-          num++;
-          r = 0;
-          col = 0;
+          num--;
+          r = 3;
         }
-      } else if(this.array[r][col] === 0 && this.isLegal(r,col,num)) {
-        this.insertItem(r,col,num);
-        console.log(this.array);
-        if(r<3) {
-          r++;
-          col = 0;
+        let index = this.array[r].indexOf(num);
+        if(!isFixed[r][index]) {
+          this.insertItem(r,index,0);
         } else {
-          num++;
-          r = 0;
-          col = 0;
+          backtrack();
         }
-      } else if (col < 3){
-        col++;
-      } else if (r > 0) {
-        r--;
-        backtrack();
+        if(index < 3) {
+          col = index + 1;
+        } else {
+          backtrack();
+        }
+      };
+      if(this.isComplete()) {
+        return this.array;
       } else {
-        num--;
-        r = 3;
-        backtrack();
+        if(this.array[r].includes(num)) {
+          if(r<3) {
+            r++;
+            col = 0;
+          } else {
+            num++;
+            r = 0;
+            col = 0;
+          }
+        } else if(this.array[r][col] === 0 && this.isLegal(r,col,num)) {
+          this.insertItem(r,col,num);
+          if(r<3) {
+            r++;
+            col = 0;
+          } else {
+            num++;
+            r = 0;
+            col = 0;
+          }
+        } else if (col < 3) {
+          col++;
+        } else if (col > 3 || r > 3 || num > 4) {
+          return this.array;
+        } else {
+          backtrack();
+        }
+        recursiveSolver(num,r,col);
       }
-      this.solvePuzzle(num,r,col);
     }
+    console.log(recursiveSolver(1,0,0));
+    return recursiveSolver(1,0,0);
   }
 }

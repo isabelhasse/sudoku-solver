@@ -24,14 +24,22 @@ describe("board", function() {
   it("fills in a 4 by 4 board where no backtracking is required", function() {
     let unsolved = new Board([[0,3,0,0],[2,0,0,3],[1,0,0,4],[0,0,1,0]]);
 
-    expect(unsolved.solvePuzzle(1,0,0)).toEqual([[4,3,2,1],[2,1,4,3],[1,2,3,4],[3,4,1,2]]);
+    expect(unsolved.solvePuzzle()).toEqual([[4,3,2,1],[2,1,4,3],[1,2,3,4],[3,4,1,2]]);
   })
 
   it("fills in a 4 by 4 board with backtracking", function() {
     let unsolved2 = new Board([[3,0,0,0],[0,1,4,0],[0,3,2,0],[0,0,0,4]]);
 
-    console.log(unsolved2.solvePuzzle(1,0,0));
+    console.log(unsolved2.mirrorArray());
 
-    expect(unsolved2.solvePuzzle(1,0,0)).toEqual([[3,4,1,2],[2,1,4,3],[4,3,2,1],[1,2,3,4]]);
+    expect(unsolved2.solvePuzzle()).toEqual([[3,4,1,2],[2,1,4,3],[4,3,2,1],[1,2,3,4]]);
+  });
+
+  it("doesn't allow for changes in original numbers", function() {
+    let unsolved3 = new Board([[0,4,0,0],[1,0,0,0],[0,0,0,2],[0,1,3,0]])
+
+    console.log(unsolved3.solvePuzzle());
+
+    expect(unsolved3.solvePuzzle()).toEqual([[3,4,2,1],[1,2,4,3],[4,3,1,2],[2,1,3,4]]);
   })
 });
